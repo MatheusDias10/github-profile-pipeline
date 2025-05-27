@@ -54,7 +54,7 @@ def ajustar_dados(df: pd.DataFrame) -> pd.DataFrame:
 
     df_limpo = df[cols].copy()
 
-        # Conversão de colunas de data (tratando tz-aware)
+    # Conversão de colunas de data (tratando tz-aware)
     try:
         df_limpo[["created_at", "updated_at"]] = (
             df_limpo[["created_at", "updated_at"]]

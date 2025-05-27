@@ -42,16 +42,17 @@ github-profile-pipeline/
 │
 ├── .venv/                            # Ambiente virtual
 ├── etl_process/                      # Pasta principal do pipeline ETL
-│   ├── 1_extract_data/               # Módulo de extração
+│   ├── extract_data/               # Módulo de extração
 │   │   └── extract_github_profile.py # Função de extração de perfis
-│   ├── 2_transform/                  # Módulo de transformação
+│   ├── transform/                  # Módulo de transformação
 │   │   └── transform_data.py         # Limpeza e normalização de dados
-│   └── 3_load/                       # Módulo de carregamento
+│   └── load/                       # Módulo de carregamento
 │       └── perfil_load.py            # Funções de persistência (CSV, banco, etc.)
 ├── .env                              # Variáveis de ambiente
 ├── .gitattributes
 ├── .gitignore
 ├── LICENSE
+├── pipeline.py                       # Aonde vai rodar o arquivo principal contendo todas as funções  
 ├── README.md
 └── requirements.txt
 ```
@@ -90,3 +91,58 @@ github-profile-pipeline/
    GITHUB_TOKEN=seu_personal_access_token_aqui
    ```
 2. Certifique-se de que `.env` está listado no `.gitignore` para não vazar credenciais.
+
+---
+
+## Uso
+
+### Extrair um único perfil
+
+```bash
+python extract.py
+Qual o nome do perfil GitHub:
+```
+
+### Pipeline completo ETL
+
+```bash
+python pipeline.py --username octocat --output data/octocat.csv
+```
+
+Onde:
+
+* `--username`: login do GitHub a ser buscado.
+* `--output`: caminho do CSV de saída.
+
+---
+
+## Exemplo de Resultado
+
+O arquivo CSV terá colunas como:
+
+| login   | public_repos | followers | following | created_at          | updated_at          | account_age |
+| ------- | ------------ | --------- | --------- | ------------------- | ------------------- | ----------- |
+| octocat | 8            | 5256      | 9         | 2011-01-25T18:44:36Z | 2025-05-02T07:45:05Z | 5211      |
+
+
+---
+
+## Contribuindo
+
+1. Fork este repositório.
+2. Crie uma branch de feature (`git checkout -b feature/minha-feature`).
+3. Implemente as mudanças e escreva testes, se aplicável.
+4. Faça commit e push da sua branch.
+5. Abra um Pull Request descrevendo suas alterações.
+
+---
+
+## Licença
+
+Este projeto está licenciado sob a **BSD 3-Clause License**. Consulte o arquivo `LICENSE` para mais detalhes.
+
+---
+
+## Autor
+
+Feito por: MatheusDias10 – [LinkedIn](https://www.linkedin.com/in/matheus-dias-71982b333/)
