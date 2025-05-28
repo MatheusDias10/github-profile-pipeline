@@ -15,6 +15,6 @@ if __name__ == "__main__":
         print("Falha na extração. Verifique o usuário e tente novamente.")
     clean = ajustar_dados(raw)
     # Defina o caminho de saída
-    output_path = f"data{username}.csv"
+    output_path = f"data-{username}.csv"
     salva_csv(clean, output_path)
     print(f"Concluido. Dados salvos em {output_path}")
