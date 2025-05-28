@@ -1,6 +1,6 @@
 # github-profile-pipeline
 
-Pipeline Python que extrai dados de perfis do GitHub via API, limpa com pandas e exporta para CSV.
+Pipeline Python que extrai dados de perfis do GitHub via API, limpa com pandas, exporta para arquivos CSV e exibe tudo em uma interface Web usando Streamlit.
 
 ---
 
@@ -11,6 +11,7 @@ Este projeto fornece um pipeline ETL simples para:
 1. **Extrair** dados de perfis GitHub usando a API oficial.
 2. **Transformar** o JSON bruto em um DataFrame pandas, mantendo apenas os campos relevantes.
 3. **Carregar** os resultados em arquivos CSV para análises ou integração com outros sistemas.
+4. **Exibir** os resultados em uma interface web com o Streamlit.
 
 Ideal para quem deseja comparar características de usuários (número de repositórios, seguidores, data de criação, etc.) de forma automatizada.
 
@@ -23,6 +24,7 @@ Ideal para quem deseja comparar características de usuários (número de reposi
 * Garantia de configuração de ambiente (.env) e feedback claro em caso de falta de credenciais.
 * Modularização em fases Extract e Transform, com possibilidade de extensão para Load.
 * Retorno de DataFrames pandas prontos para análise e exportação.
+* Exibição do DataFrame em uma interface web.
 
 ---
 
@@ -32,6 +34,7 @@ Ideal para quem deseja comparar características de usuários (número de reposi
 * **pandas 2.2.3**
 * **requests 2.32.3**
 * **python-dotenv 1.1.0**
+* **Streamlit**
 
 ---
 
@@ -40,21 +43,22 @@ Ideal para quem deseja comparar características de usuários (número de reposi
 ```text
 github-profile-pipeline/
 │
-├── .venv/                            # Ambiente virtual
-├── etl_process/                      # Pasta principal do pipeline ETL
-│   ├── extract_data/               # Módulo de extração
-│   │   └── extract_github_profile.py # Função de extração de perfis
-│   ├── transform/                  # Módulo de transformação
-│   │   └── transform_data.py         # Limpeza e normalização de dados
-│   └── load/                       # Módulo de carregamento
-│       └── perfil_load.py            # Funções de persistência (CSV, banco, etc.)
-├── .env                              # Variáveis de ambiente
-├── .gitattributes
-├── .gitignore
-├── LICENSE
-├── pipeline.py                       # Aonde vai rodar o arquivo principal contendo todas as funções  
-├── README.md
-└── requirements.txt
+├── .venv/                                # Ambiente virtual
+├── data/                                 # Onde estarão os arquivos CSV
+│   ├── log.csv                           # É o log completo com repetições de dados (O arquivo csv que vai no historico do app)
+│   ├── users.csv                         # É o arquivo oficial sem duplicatas.
+├── etl_process/                          # Pasta principal do pipeline ETL
+│   ├── extract/                          # Módulo de extração
+│   │   └── extract_github_client.py      # Função de extração de perfis
+│   ├── transform/                        # Módulo de transformação
+│   │   └── transform_data.py             # Limpeza e normalização de dados
+│   └── load/                             # Módulo de carregamento
+│       └── perfil_load.py                # Funções de persistência (CSV, banco, etc.)
+├── .env                                  # Variáveis de ambiente
+├── .gitignore                            # Arquivos ou coisas a se ignorar
+├── app.py                                # Aonde será exibido a interface web com todo o processo ETL embutido.  
+├── README.md                             # README
+└── requirements.txt                      # Requerimentos
 ```
 
 ---
@@ -106,7 +110,7 @@ Qual o nome do perfil GitHub:
 ### Pipeline completo ETL
 
 ```bash
-python pipeline.py --username octocat --output data/octocat.csv
+python app.py --username octocat --output data/octocat.csv
 ```
 
 Onde:
@@ -134,12 +138,6 @@ O arquivo CSV terá colunas como:
 3. Implemente as mudanças e escreva testes, se aplicável.
 4. Faça commit e push da sua branch.
 5. Abra um Pull Request descrevendo suas alterações.
-
----
-
-## Licença
-
-Este projeto está licenciado sob a **BSD 3-Clause License**. Consulte o arquivo `LICENSE` para mais detalhes.
 
 ---
 

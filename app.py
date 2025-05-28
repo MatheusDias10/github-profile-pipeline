@@ -2,7 +2,6 @@ import streamlit as st
 from etl_process.extract.extract_github_client import busca_usuario
 from etl_process.transform.transform_data import ajustar_dados
 from etl_process.load.perfil_load import salva_csv, carrega_historico
-import os
 
 HIST_CSV = "datausuarios.csv"
 
