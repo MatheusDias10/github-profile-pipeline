@@ -13,6 +13,7 @@ import requests
 load_dotenv()
 token = os.getenv("GITHUB_TOKEN")
 
+# Passando Headers junto com token
 headers = {
     "User-Agent": "github-profile-pipeline",
     "Accept": "application/vnd.github.v3+json",
@@ -43,6 +44,7 @@ def busca_usuario(username: str) -> pd.DataFrame | None:
     """
     url = f"https://api.github.com/users/{username}"
 
+    # Fazendo a extração
     try:
         response = session.get(url, timeout=(3, 5))
         response.raise_for_status()

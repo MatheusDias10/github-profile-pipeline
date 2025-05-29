@@ -40,6 +40,7 @@ def ajustar_dados(df: pd.DataFrame) -> pd.DataFrame:
     if df.empty:
         raise ValueError("DataFrame de entrada está vazio")
 
+    # Escolhendo as colunas do df
     cols = ["login",
             "public_repos",
             "followers",
@@ -52,6 +53,7 @@ def ajustar_dados(df: pd.DataFrame) -> pd.DataFrame:
     if faltantes:
         raise KeyError(f"Colunas faltantes em DataFrame: {faltantes}")
 
+    # Fazendo uma copia do df
     df_limpo = df[cols].copy()
 
     # Conversão de colunas de data (tratando tz-aware)
