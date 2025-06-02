@@ -47,13 +47,8 @@ with st.sidebar:
             salva_log(clean, LOG_CSV)
             salva_unique(clean, USERS_CSV)
 
-            st.info(f"Perfil adicionado ao log: {LOG_CSV}")
-            st.info(f"Lista única atualizada: {USERS_CSV}")
-
             # Deixando apenas os "avisos" sem a tabela
             st.success("Dados carregados com sucesso.")
-            st.info(f"Perfil adicionado ao log: {LOG_CSV}")
-            st.info(f"Lista única atualizada: {USERS_CSV}")
 
     # Botão para ver o histórico
     if st.button("Ver histórico"):
@@ -61,11 +56,25 @@ with st.sidebar:
 
     # Botão para ver os usuários únicos
     if st.button("Ver usuários únicos"):
-        st.session_state["exibir_usuarios_unicos"]
+        st.session_state["exibir_usuarios_unicos"] = True
 
     # Criando um botão de limpar os dados das tabelas.
     if st.button("Limpar dados da tabela"):
-        # Lógico da limpeza do CSV
+        if not os.path.exists(USERS_CSV) or os.path.getsize(USERS_CSV) == 0:
+            st.warning(f"Arquivo {USERS_CSV} não foi encontrado ou vazio.")
+            st.stop()
+
+        if not os.path.exists(LOG_CSV) or os.path.getsize(LOG_CSV) == 0:
+            st.warning(f"O arquivo {LOG_CSV} não foi encontrado ou está vazio.")
+            st.stop()
+
+        df_users_header = pd.read_csv(USERS_CSV, nrows=0)
+        df_users_header.to_csv(USERS_CSV, index=False)
+
+        df_log_header = pd.read_csv(LOG_CSV, nrows=0)
+        df_log_header.to_csv(LOG_CSV, index=False)
+
+        st.session_state.clear()
         st.success("O histórico foi limpo.")
 
 # EXIBIÇÃO NA ÁREA PRINCIPAL
@@ -91,6 +100,3 @@ if st.session_state.get("exibir_usuarios_unicos", False):
     else:
         df_users = pd.read_csv(USERS_CSV, parse_dates=["created_at", "updated_at"])
         st.dataframe(df_users)
-    
-
-# PROBLEMA: NÃO ESTÁ LIMPANDO OS DADOS DA TABELA AO CLICAR NO "LIMPAR HISTÓRICO".
