@@ -2,17 +2,13 @@
 Fazendo a interface web rodar com todo o prrocesso ETL embutido.
 """
 
-import os
 import pandas as pd
 import streamlit as st
 
 from etl_process.extract.extract_github_client import busca_usuario
 from etl_process.transform.transform_data import ajustar_dados
 from etl_process.load.perfil_load import salva_log, salva_unique
-
-
-LOG_CSV = "data/log.csv"
-USERS_CSV = "data/users.csv"
+from etl_process.load.db_config import engine
 
 
 # COnfiguração da pagina para sidebar
@@ -44,8 +40,8 @@ with st.sidebar:
             st.session_state["perfil_df"] = clean
 
             # Atualiza log completo e a lista única
-            salva_log(clean, LOG_CSV)
-            salva_unique(clean, USERS_CSV)
+            salva_log(clean)
+            salva_unique(clean)
 
             # Deixando apenas os "avisos" sem a tabela
             st.success("Dados carregados com sucesso.")
@@ -60,22 +56,26 @@ with st.sidebar:
 
     # Criando um botão de limpar os dados das tabelas.
     if st.button("Limpar dados da tabela"):
-        if not os.path.exists(USERS_CSV) or os.path.getsize(USERS_CSV) == 0:
-            st.warning(f"Arquivo {USERS_CSV} não foi encontrado ou vazio.")
+        # Verificando se a pasta existe e se está vazia
+        try:
+            count_users = pd.read_sql("SELECT COUNT(*) FROM usuarios_unicos", engine).iloc[0,0]
+            count_log = pd.read_sql("SELECT COUNT(*) FROM log_perfis", engine).iloc[0,0]
+        except Exception:
+            st.warning("Não foi possível acessar as tabelas no banco.")
             st.stop()
 
-        if not os.path.exists(LOG_CSV) or os.path.getsize(LOG_CSV) == 0:
-            st.warning(f"O arquivo {LOG_CSV} não foi encontrado ou está vazio.")
-            st.stop()
+    if count_users == 0 and count_log == 0:
+        st.warning("Não há dados para limpar.")
+        st.stop()
 
-        df_users_header = pd.read_csv(USERS_CSV, nrows=0)
-        df_users_header.to_csv(USERS_CSV, index=False)
+        # Se existirem linhas, apaga tudo:
+        with engine.begin() as conn:
+            conn.execute(text("DELETE FROM usuarios_unicos;"))
+            conn.execute(text("DELETE FROM log_perfis;"))
 
-        df_log_header = pd.read_csv(LOG_CSV, nrows=0)
-        df_log_header.to_csv(LOG_CSV, index=False)
+            st.session_state.clear()
+            st.success("O histórico foi limpo.")
 
-        st.session_state.clear()
-        st.success("O histórico foi limpo.")
 
 # EXIBIÇÃO NA ÁREA PRINCIPAL
 
@@ -86,17 +86,30 @@ if st.session_state.get("exibir_perfil", False):
 
 # Se clicou em "Ver histórico", mostramos o log completo na área principal
 if st.session_state.get("exibir_historico", False):
-    # Antes, conferindo se o arquivo existe ou se está vazio
-    if not os.path.exists(LOG_CSV) or os.path.getsize(LOG_CSV) == 0:
+    try:
+        df_log = pd.read_sql(
+            "SELECT * FROM log_perfis",  # nome da tabela no banco
+            engine,
+            parse_dates=["created_at", "updated_at"]
+        )
+        if df_log.empty:
+            st.warning("Ainda não há histórico salvo. Clique em Buscar antes.")
+        else:
+            st.dataframe(df_log)
+    except Exception:
         st.warning("Ainda não há histórico salvo. Clique em Buscar antes.")
-    else:
-        df_log = pd.read_csv(LOG_CSV, parse_dates=["created_at", "updated_at"])
-        st.dataframe(df_log)
 
 # Se clicou em "Ver usuários únicos", mostramso a lista única na área principal
 if st.session_state.get("exibir_usuarios_unicos", False):
-    if not os.path.exists(USERS_CSV) or os.path.getsize(USERS_CSV) == 0:
+    try:
+        df_users = pd.read_sql(
+            "SELECT * FROM usuarios_unicos",
+            engine,
+            parse_dates=["created_at", "updated_at"]
+        )
+        if df_users.empty:
+            st.warning("Ainda não há usuários únicos salvos. Clique em Buscar antes.")
+        else:
+            st.dataframe(df_users)
+    except Exception:
         st.warning("Ainda não há usuários únicos salvos. Clique em Buscar antes.")
-    else:
-        df_users = pd.read_csv(USERS_CSV, parse_dates=["created_at", "updated_at"])
-        st.dataframe(df_users)

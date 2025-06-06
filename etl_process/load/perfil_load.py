@@ -2,7 +2,7 @@
 Criando uma função que irá exportar e salvar o DataFrame em um arquivo CSV.
 """
 
-import os
+from .db_config import engine
 import pandas as pd
 
 
@@ -13,28 +13,33 @@ def carrega_historico(caminho: str) -> pd.DataFrame:
     return pd.read_csv(caminho, parse_dates=["created_at", "updated_at"])
 
 
-def salva_log(df: pd.DataFrame, path: str) -> None:
+def salva_log(df: pd.DataFrame) -> None:
     """
-    Decide se deve incluir cabeçarios e coloca o df no modo append
+    Insere cada linha do DataFrame em log_perfis no SQL Server.
     """
-    header = not os.path.exists(path)
-    df.to_csv(path, mode="a", header=header, index=False)
+    df.to_sql(
+        name="log_perfis",
+        con=engine,
+        if_exists="append",
+        index=False
+    )
 
 
-def salva_unique(df: pd.DataFrame, path: str) -> None:
+def salva_unique(df: pd.DataFrame) -> None:
     """
-    Atualiza a lista unica de usuários (users.cvs), sem duplicatas.
+    Atualiza a tabela usuarios_unicos sem duplicatas.
     """
-
-    # Vendo se a pasta existe no disco e caso True coloque-as em dtype
-    if os.path.exists(path) and os.path.getsize(path) > 0:
-        df0 = pd.read_csv(path, parse_dates=["created_at", "updated_at"])
-    else:
+    try:
+        df0 = pd.read_sql("SELECT * FROM usuarios_unicos", engine, parse_dates=["created_at","updated_at"])
+    except Exception:
         df0 = pd.DataFrame()
 
-    # Concatenar e tirar duplicatas.
     df_full = pd.concat([df0, df], ignore_index=True)
     df_full = df_full.drop_duplicates(subset=["login"], keep="last")
 
-    # Aplica no csv.
-    df_full.to_csv(path, index=False)
+    df_full.to_sql(
+        name="usuarios_unicos",
+        con=engine,
+        if_exists="replace",
+        index=False
+    )
