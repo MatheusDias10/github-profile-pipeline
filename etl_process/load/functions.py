@@ -2,8 +2,9 @@
 Criando uma função que irá exportar e salvar o DataFrame em um arquivo CSV.
 """
 
-from .db_config import engine
 import pandas as pd
+from .db_config import engine
+
 
 
 def carrega_historico(caminho: str) -> pd.DataFrame:

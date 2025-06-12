@@ -10,7 +10,7 @@ Este projeto fornece um pipeline ETL simples para:
 
 1. **Extrair** dados de perfis GitHub usando a API oficial.
 2. **Transformar** o JSON bruto em um DataFrame pandas, mantendo apenas os campos relevantes.
-3. **Carregar** os resultados em arquivos CSV para análises ou integração com outros sistemas.
+3. **Carregar** os resultados em um banco de dados do SQL Server para análises ou integração com outros sistemas.
 4. **Exibir** os resultados em uma interface web com o Streamlit.
 
 Ideal para quem deseja comparar características de usuários (número de repositórios, seguidores, data de criação, etc.) de forma automatizada.
@@ -23,8 +23,8 @@ Ideal para quem deseja comparar características de usuários (número de reposi
 * Tratamento de erros de rede e parsing de JSON.
 * Garantia de configuração de ambiente (.env) e feedback claro em caso de falta de credenciais.
 * Modularização em fases Extract e Transform, com possibilidade de extensão para Load.
-* Retorno de DataFrames pandas prontos para análise e exportação.
-* Exibição do DataFrame em uma interface web.
+* Retorno de um Banco de Dados pronto para análise e armazenamento.
+* Exibição dos dados armazenados em uma interface web.
 
 ---
 
@@ -35,6 +35,7 @@ Ideal para quem deseja comparar características de usuários (número de reposi
 * **requests 2.32.3**
 * **python-dotenv 1.1.0**
 * **Streamlit**
+* **sqlalchemy**
 
 ---
 
@@ -44,17 +45,14 @@ Ideal para quem deseja comparar características de usuários (número de reposi
 github-profile-pipeline/
 │
 ├── .venv/                                # Ambiente virtual
-├── data/                                 # Onde estarão os arquivos CSV
-│   ├── log.csv                           # É o log completo com repetições de dados (O arquivo csv que vai no historico do app)
-│   ├── users.csv                         # É o arquivo oficial sem duplicatas.
 ├── etl_process/                          # Pasta principal do pipeline ETL
 │   ├── extract/                          # Módulo de extração
 │   │   └── extract_github_client.py      # Função de extração de perfis
 │   ├── transform/                        # Módulo de transformação
 │   │   └── transform_data.py             # Limpeza e normalização de dados
 │   └── load/                             # Módulo de carregamento
-│       └── perfil_load.py                # Funções de persistência (CSV, banco, etc.)
-├── .env                                  # Variáveis de ambiente
+│       ├── db_config.py                  # Configuração do Banco de Dados SQL Server
+│       └── functions.py                  # Funções de persistência (funções e etc.)                  
 ├── .gitignore                            # Arquivos ou coisas a se ignorar
 ├── app.py                                # Aonde será exibido a interface web com todo o processo ETL embutido.  
 ├── README.md                             # README

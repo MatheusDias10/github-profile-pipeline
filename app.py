@@ -7,8 +7,9 @@ import streamlit as st
 
 from etl_process.extract.extract_github_client import busca_usuario
 from etl_process.transform.transform_data import ajustar_dados
-from etl_process.load.perfil_load import salva_log, salva_unique
+from etl_process.load.functions import salva_log, salva_unique
 from etl_process.load.db_config import engine
+from sqlalchemy import text
 
 
 # COnfiguração da pagina para sidebar
@@ -56,25 +57,27 @@ with st.sidebar:
 
     # Criando um botão de limpar os dados das tabelas.
     if st.button("Limpar dados da tabela"):
-        # Verificando se a pasta existe e se está vazia
+        # tenta ler quantas linhas existem
         try:
             count_users = pd.read_sql("SELECT COUNT(*) FROM usuarios_unicos", engine).iloc[0,0]
-            count_log = pd.read_sql("SELECT COUNT(*) FROM log_perfis", engine).iloc[0,0]
+            count_log = pd.read_sql("SELECT COUNT(*) FROM log_perfis",     engine).iloc[0,0]
         except Exception:
             st.warning("Não foi possível acessar as tabelas no banco.")
             st.stop()
 
-    if count_users == 0 and count_log == 0:
-        st.warning("Não há dados para limpar.")
-        st.stop()
+        # se estiver tudo vazio, aborta
+        if count_users == 0 and count_log == 0:
+            st.warning("Não há dados para limpar.")
+            st.stop()
 
-        # Se existirem linhas, apaga tudo:
+        # se chegou aqui, é porque EXISTEM linhas a serem removidas
         with engine.begin() as conn:
             conn.execute(text("DELETE FROM usuarios_unicos;"))
             conn.execute(text("DELETE FROM log_perfis;"))
 
-            st.session_state.clear()
-            st.success("O histórico foi limpo.")
+        # limpa o estado e avisa sucesso
+        st.session_state.clear()
+        st.success("O histórico foi limpo.")
 
 
 # EXIBIÇÃO NA ÁREA PRINCIPAL
