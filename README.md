@@ -1,6 +1,6 @@
 # github-profile-pipeline
 
-Pipeline Python que extrai dados de perfis do GitHub via API, limpa com pandas, exporta para arquivos CSV e exibe tudo em uma interface Web usando Streamlit.
+Pipeline Python que extrai dados de perfis do GitHub via API, limpa com pandas, exporta para um banco de dados SQL Server e exibe tudo em uma interface Web usando Streamlit.
 
 ---
 
