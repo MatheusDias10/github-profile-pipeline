@@ -139,6 +139,14 @@ O arquivo CSV terá colunas como:
 
 ---
 
+## Screenshots
+
+![Interfaceweb](https://github.com/user-attachments/assets/9a0708e4-3f5c-440c-8134-7687bcd69956)
+
+![Captura de tela 2025-06-12 152309](https://github.com/user-attachments/assets/da1047ce-caf9-4325-8eb1-7baa30801489)
+
+---
+
 ## Autor
 
 Feito por: MatheusDias10 – [LinkedIn](https://www.linkedin.com/in/matheus-dias-71982b333/)
