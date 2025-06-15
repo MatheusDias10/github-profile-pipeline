@@ -103,7 +103,7 @@ github-profile-pipeline/
 ```bash
 python extract.py
 Qual o nome do perfil GitHub:
-
+```
 ---
 
 ## Exemplo de Resultado
