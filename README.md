@@ -103,18 +103,6 @@ github-profile-pipeline/
 ```bash
 python extract.py
 Qual o nome do perfil GitHub:
-```
-
-### Pipeline completo ETL
-
-```bash
-python app.py --username octocat --output data/octocat.csv
-```
-
-Onde:
-
-* `--username`: login do GitHub a ser buscado.
-* `--output`: caminho do CSV de saída.
 
 ---
 
